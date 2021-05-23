@@ -8,12 +8,8 @@ import com.upgrade.bookingservice.model.exception.InvalidPaymentModeException;
 import com.upgrade.bookingservice.repository.BookingRepository;
 import lombok.AllArgsConstructor;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.LongSerializer;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +21,6 @@ import org.springframework.web.client.RestTemplate;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.Random;
 import java.util.StringJoiner;
 import java.util.concurrent.CountDownLatch;
@@ -52,12 +47,7 @@ public class BookingService {
        long noOfDays =  ChronoUnit.DAYS.between(bookingInfoEntity.getFromDate(), bookingInfoEntity.getToDate());
         bookingInfoEntity.setRoomPrice( 1000 * bookingInfoEntity.getNumOfRooms() * ((int)noOfDays) );
         bookingInfoEntity.setRoomNumbers(getRandomNumber(bookingInfoEntity.getNumOfRooms()));
-        bookingInfoEntity = bookingRepository.save(bookingInfoEntity);
-        try {
-			runProducer(1,"hi "+ bookingInfoEntity.toString());
-		} catch (InterruptedException e) {
-			e.printStackTrace(); //Internally throw 500 error
-		}
+        bookingInfoEntity = bookingRepository.save(bookingInfoEntity);        
         return  bookingInfoEntity;
     }
     
@@ -80,6 +70,11 @@ public class BookingService {
                     transaction =  callPaymentServiceApi(transaction);
                     bookingInfoEntity.setTransactionId(transaction.getTransactionId());
                     bookingInfoEntity = bookingRepository.save(bookingInfoEntity);
+                    try {
+            			runProducer(1,"hi "+ bookingInfoEntity.toString());
+            		} catch (InterruptedException e) {
+            			e.printStackTrace(); //Internally throw 500 error
+            		}
                 }
         } else {
             throw new InvalidPaymentModeException("Invalid mode of payment");
@@ -88,7 +83,13 @@ public class BookingService {
     }
     
     /**
+     * This help us to produce the Kafka Messages on EC2 kafka server 
      * 
+     * @param sendMessageCount is used to set the iteration for the message, means how many time you wanted this message to be 
+     * repeated
+     * 
+     *  @param Message: bookingentityinfo toString details will be passed in this as a successfull response after updating the
+     *  transaction id in Booking Table
      * **/
     public static void runProducer(final int sendMessageCount, String message) throws InterruptedException {
     	
@@ -113,41 +114,14 @@ public class BookingService {
                }
                countDownLatch.await(25, TimeUnit.SECONDS);
         }
-    	
-    	
-    	/*
-        final Producer<Long, String> producer = Configuration.createProducer();
-        long time = System.currentTimeMillis();
-        final CountDownLatch countDownLatch = new CountDownLatch(sendMessageCount);
-        
-        try {
-            for (long index = time; index < time + sendMessageCount; index++) {
-                final ProducerRecord<Long, String> record =
-                        new ProducerRecord<>(Configuration.TOPIC, index, message);
-                producer.send(record, (metadata, exception) -> {
-                    long elapsedTime = System.currentTimeMillis() - time;
-                    if (metadata != null) {
-                        System.out.printf("sent record(key=%s value=%s) " +
-                                        "meta(partition=%d, offset=%d) time=%d\n",
-                                record.key(), record.value(), metadata.partition(),
-                                metadata.offset(), elapsedTime);
-                    } else {
-                        exception.printStackTrace();
-                    }
-                    countDownLatch.countDown();
-                });
-            }
-            countDownLatch.await(25, TimeUnit.SECONDS);
-        }finally {
-            producer.flush();
-            producer.close();
-        }
-        */
     }
     
     
     /**
+     * callPaymentServiceApi method is used to pass the transaction json raw data to the Payment api
+     * then it will fetch the transaction api in response
      * 
+     * @param Transaction modal will be passed in raw body as json
      * **/
     private Transaction callPaymentServiceApi(Transaction paymentDetails) {
         HttpHeaders headers = new HttpHeaders();
@@ -159,7 +133,8 @@ public class BookingService {
     }
 
     /**
-     * This Method Generating random room numbers, to get the randomly generated room
+     * This Method Generating random room numbers
+     * @param Count: number of rooms required.
      * */
     private String getRandomNumber(int count) {
 

@@ -19,42 +19,6 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import com.upgrad.notification.kafka.Consumerloop;
 
 public class Notification {
-
-//	 public static void main(String[] args) {
-		 
-//		 	        Properties properties = new Properties();
-//	        properties.put("bootstrap.servers", "54.242.164.154:9092");
-//	        properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//	        properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-//	        properties.put("group.id", "test-group");
-//
-//	        KafkaConsumer kafkaConsumer = new KafkaConsumer(properties);
-//	        List topics = new ArrayList();
-//	        topics.add("message");
-//	        kafkaConsumer.subscribe(topics);
-//	        try{
-//	        	while (true) {
-//					ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofSeconds(10));
-//					for (ConsumerRecord<String, String> record : records) {
-////		          Map<String, Object> data = new HashMap<>();
-////		          data.put("partition", record.partition());
-////		          data.put("offset", record.offset());
-////		          data.put("value", record.value());
-//						System.out.println(record.value());
-//						kafkaConsumer.commitAsync();
-//					}
-////	            while (true){
-////	                ConsumerRecords records = kafkaConsumer.poll(Duration.ofSeconds(10));
-////	                for (ConsumerRecord record: records){
-////	                    System.out.println(String.format("Topic - %s, Partition - %d, Value: %s", record.topic(), record.partition(), record.value()));
-////	                }
-//	            }
-//	        }catch (Exception e){
-//	            System.out.println(e.getMessage());
-//	        }finally {
-//	            kafkaConsumer.close();
-//	        }
-//	    }
 	
 	public static void main(String[] args) { 
 		  int numConsumers = 1;
