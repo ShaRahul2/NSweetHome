@@ -71,7 +71,7 @@ public class BookingService {
                     bookingInfoEntity.setTransactionId(transaction.getTransactionId());
                     bookingInfoEntity = bookingRepository.save(bookingInfoEntity);
                     try {
-            			runProducer(1,"hi "+ bookingInfoEntity.toString());
+            			runProducer(1, bookingInfoEntity.toString());
             		} catch (InterruptedException e) {
             			e.printStackTrace(); //Internally throw 500 error
             		}
