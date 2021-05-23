@@ -8,9 +8,12 @@ import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -36,6 +39,7 @@ public class BookingController {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     @PostMapping(value = "/booking", consumes = {"application/json"}, produces = {"application/json"})
+    @ResponseStatus(code = HttpStatus.CREATED)
     public BookingInfoEntity createBookingRecorde(@RequestBody BookingInfoEntity bookingInfoEntity) {
         bookingInfoEntity = bookingService.createBooking(bookingInfoEntity);
         log.info("Booking Record Successfully : " + bookingInfoEntity);
@@ -69,6 +73,7 @@ public class BookingController {
             @ApiResponse(code = 500, message = "Internal Server Error")
     })
     @PostMapping(value = "/booking/{id}/transaction", consumes = {"application/json"}, produces = {"application/json"})
+    @ResponseStatus(code = HttpStatus.CREATED)
     public BookingInfoEntity fetchBookingById(@PathVariable("id") int id, @RequestBody Transaction transaction) {
         return bookingService.getBookingById(id, transaction);
     }

@@ -1,6 +1,9 @@
 package com.upgrade.bookingservice.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +11,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.NaturalId;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,7 +23,6 @@ import java.time.LocalDateTime;
 @Entity(name= "booking")
 @NoArgsConstructor
 @Getter @Setter
-@ToString
 @JsonPropertyOrder({ "bookingId", "fromDate","toDate","aadharNumber","roomNumbers", "roomPrice","transactionId","bookedOn"})
 /**
  * @author Rahul Sharma
@@ -31,6 +34,7 @@ public class BookingInfoEntity {
      * */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    //@Column(name = "bookingId", unique = true, nullable = false)
     @ApiModelProperty(notes ="It refers to the BookingId of the user and is used to uniquely identify a booking")
     private Integer bookingId;
 
@@ -56,6 +60,7 @@ public class BookingInfoEntity {
      * It refers to the number of rooms required by user
      */
     @ApiModelProperty(notes ="It refers to the number of rooms required by user")
+    @JsonProperty(access = Access.WRITE_ONLY)
     private Integer numOfRooms;
 
     /**
@@ -73,14 +78,13 @@ public class BookingInfoEntity {
      * */
     @ApiModelProperty(notes ="It refers to the transactionId which we get from the payment service.\n" +
             " '0' which represents that no transaction has happened so far for this booking")
-    @NaturalId(mutable=true)
     private Integer transactionId = 0;
 
     /**
      * It refers to the current date
      * */
     @ApiModelProperty(notes ="It refers to the current date")
-    private LocalDate bookedOn;
+    private LocalDate bookedOn = LocalDate.now();
 
     /**
      * It refers to, how many Room are Available
@@ -88,8 +92,12 @@ public class BookingInfoEntity {
     @ApiModelProperty(notes ="It refers to, how many Room are Available")
     private String roomNumbers;
 
-    /**
-     * It refer to the current date.
-     * */
-    public LocalDateTime getBookedOn() { return LocalDateTime.now();}
+	@Override
+	public String toString() {
+		return "BookingInfoEntity [bookingId=" + bookingId + ", fromDate=" + fromDate + ", toDate=" + toDate
+				+ ", aadharNumber=" + aadharNumber + ", roomPrice=" + roomPrice + ", transactionId=" + transactionId
+				+ ", bookedOn=" + bookedOn + ", roomNumbers=" + roomNumbers + "]";
+	}
+    
+    
 }
