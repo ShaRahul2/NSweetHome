@@ -157,7 +157,7 @@ public class BookingServiceControllerAdvicer extends ResponseEntityExceptionHand
      */
     @ExceptionHandler(RuntimeException.class)
     protected ResponseEntity<Object> handleEntityNotFound(RuntimeException ex) {
-        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST);
         apiError.setMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
