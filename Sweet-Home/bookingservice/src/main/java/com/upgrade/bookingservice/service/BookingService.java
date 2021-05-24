@@ -52,7 +52,10 @@ public class BookingService {
     }
     
     /**
-     * 
+     * this method is used to fetch records from the transaction api and update it into booking table
+     * then push the message into the kafka topic 
+     * First it will check and validate the request the request data like if the bookingID is not exists 
+     * then it will throw Bad_Request exception and return below response
      * **/
     public BookingInfoEntity getBookingById(int id, Transaction transaction) {
         BookingInfoEntity bookingInfoEntity = null;
